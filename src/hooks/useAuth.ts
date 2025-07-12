@@ -109,21 +109,34 @@ export function useAuth() {
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
+      console.log('🔄 Starting signup process for:', email);
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             name
+          },
+          emailRedirectTo: undefined // Disable email confirmation
           }
         }
       });
 
       if (error) {
-        console.error('❌ Supabase signup error:', error.message, error.details);
-        throw new Error(error.message || 'Failed to create account');
+        console.error('❌ Supabase signup error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('Database error saving new user')) {
+          throw new Error('There was a database issue creating your account. Please try again in a moment.');
+        } else if (error.message.includes('User already registered')) {
+          throw new Error('An account with this email already exists. Please try signing in instead.');
+        } else {
+          throw new Error(error.message || 'Failed to create account');
+        }
       }
 
+      console.log('✅ Signup successful:', data);
       return data;
     } catch (error) {
       console.error('❌ Signup error:', error);
