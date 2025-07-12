@@ -166,7 +166,7 @@ export function AdminDashboard({ users, swapRequests, onBanUser, onSendNotificat
                   />
                   <div>
                     <p className="text-white font-medium">{user.name}</p>
-                    <p className="text-slate-400 text-sm">{user.email}</p>
+                    <p className="text-slate-400 text-sm">User ID: {user.id.slice(0, 8)}...</p>
                     <p className="text-slate-400 text-xs">
                       Rating: {user.rating}/5 • {user.totalSwaps} swaps
                     </p>

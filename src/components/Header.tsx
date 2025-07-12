@@ -72,7 +72,7 @@ export function Header({ currentUser, onOpenAuth, onLogout, activeTab, onTabChan
             {currentUser ? (
               <div className="flex items-center space-x-3">
                 <button
-                  onClick={() => onTabChange('profile')}
+                  onClick={() => onTabChange('editProfile')}
                   className="flex items-center space-x-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg transition-all duration-300"
                 >
                 <div className="relative">

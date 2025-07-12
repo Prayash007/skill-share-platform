@@ -166,12 +166,15 @@ function App() {
     
     const success = await updateUserProfile(currentUser.id, updatedData);
     if (success) {
+      alert('Profile updated successfully!');
       setActiveTab('discover');
     } else {
       alert('Failed to update profile. Please try again.');
     }
   };
 
+  // Get current user's full profile data
+  const currentUserProfile = users.find(u => u.id === currentUser?.id);
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Animated Background */}
@@ -196,7 +199,14 @@ function App() {
         ) : activeTab === 'profile' ? (
           // User Profile
           <UserProfile
-            user={users.find(u => u.id === currentUser.id)!}
+            user={currentUserProfile!}
+            onSave={handleUpdateProfile}
+            onCancel={() => setActiveTab('discover')}
+          />
+        ) : activeTab === 'editProfile' ? (
+          // Edit Profile
+          <UserProfile
+            user={currentUserProfile!}
             onSave={handleUpdateProfile}
             onCancel={() => setActiveTab('discover')}
           />

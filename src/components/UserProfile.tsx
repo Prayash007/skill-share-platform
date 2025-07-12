@@ -100,16 +100,10 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
             <div className="flex items-center space-x-4">
               {/* Navigation Buttons */}
               <button
-                onClick={() => onCancel()}
+                onClick={onCancel}
                 className="px-6 py-2 bg-slate-700/50 text-slate-300 border border-slate-600/50 rounded-xl hover:bg-slate-600/50 hover:text-white transition-all duration-300 font-medium"
               >
-                Swap request
-              </button>
-              <button
-                onClick={() => onCancel()}
-                className="px-6 py-2 bg-slate-700/50 text-slate-300 border border-slate-600/50 rounded-xl hover:bg-slate-600/50 hover:text-white transition-all duration-300 font-medium"
-              >
-                Home
+                Back to Discover
               </button>
               
               {/* Profile Avatar */}

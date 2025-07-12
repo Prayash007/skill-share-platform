@@ -34,6 +34,9 @@ export function useAuth() {
 
   const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
+      // Check if this is the admin user
+      const isAdminEmail = supabaseUser.email === 'admin@skillshare.com';
+      
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
@@ -41,9 +44,36 @@ export function useAuth() {
         .single();
 
       if (error) {
-        console.error('Error fetching profile:', error);
-        setLoading(false);
-        return;
+        // If profile doesn't exist, create it (especially for admin)
+        if (error.code === 'PGRST116') {
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert({
+              id: supabaseUser.id,
+              name: isAdminEmail ? 'Admin User' : supabaseUser.user_metadata?.name || 'New User',
+              is_admin: isAdminEmail,
+              avatar_url: `https://images.pexels.com/photos/1586996/pexels-photo-1586996.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop`,
+              skills_offered: isAdminEmail ? ['Platform Management', 'Community Building'] : [],
+              skills_wanted: isAdminEmail ? ['User Feedback', 'Feature Suggestions'] : [],
+              availability: isAdminEmail ? ['24/7'] : [],
+              rating: isAdminEmail ? 5.0 : 0,
+              total_swaps: 0,
+              is_online: true
+            })
+            .select()
+            .single();
+
+          if (createError) {
+            console.error('Error creating profile:', createError);
+            setLoading(false);
+            return;
+          }
+          profile = newProfile;
+        } else {
+          console.error('Error fetching profile:', error);
+          setLoading(false);
+          return;
+        }
       }
 
       if (profile) {
