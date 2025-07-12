@@ -10,15 +10,18 @@ import { SwapRequestCard } from './components/SwapRequestCard';
 import { AuthModal } from './components/AuthModal';
 import { AdminDashboard } from './components/AdminDashboard';
 import { Pagination } from './components/Pagination';
-import { mockUsers, mockSwapRequests, mockFeedback } from './utils/mockData';
-import { User, SwapRequest, Feedback, AuthUser, SearchFilters } from './types';
+import { UserProfile } from './components/UserProfile';
+import { useAuth } from './hooks/useAuth';
+import { useUsers } from './hooks/useUsers';
+import { useSwapRequests } from './hooks/useSwapRequests';
+import { User, SwapRequest, SearchFilters } from './types';
 
 function App() {
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const { user: currentUser, loading: authLoading, signIn, signUp, signOut } = useAuth();
+  const { users, loading: usersLoading, updateUserProfile, deleteUser } = useUsers();
+  const { swapRequests, loading: requestsLoading, createSwapRequest, updateSwapRequest, deleteSwapRequest } = useSwapRequests(currentUser?.id);
+  
   const [activeTab, setActiveTab] = useState('discover');
-  const [users, setUsers] = useState<User[]>(mockUsers);
-  const [swapRequests, setSwapRequests] = useState<SwapRequest[]>(mockSwapRequests);
-  const [feedback, setFeedback] = useState<Feedback[]>(mockFeedback);
   
   // Modal states
   const [showAuth, setShowAuth] = useState(false);
@@ -34,6 +37,18 @@ function App() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
+
+  // Show loading state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading SkillSwap...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Filter users based on search criteria
   const filteredUsers = useMemo(() => {
@@ -61,53 +76,36 @@ function App() {
     currentPage * ITEMS_PER_PAGE
   );
 
-  // Get user swap requests
-  const userSwapRequests = swapRequests.filter(
-    req => req.fromUserId === currentUser?.id || req.toUserId === currentUser?.id
-  );
-
-  const handleLogin = (email: string, password: string) => {
-    const user = users.find(u => u.email === email);
-    if (user) {
-      setCurrentUser({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar,
-        isAdmin: user.isAdmin
-      });
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      await signIn(email, password);
       setActiveTab('discover');
+      setShowAuth(false);
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed. Please check your credentials.');
     }
   };
 
-  const handleSignup = (name: string, email: string, password: string) => {
-    const newUser: User = {
-      id: Date.now().toString(),
-      name,
-      email,
-      avatar: 'https://images.pexels.com/photos/1586996/pexels-photo-1586996.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
-      skillsOffered: [],
-      skillsWanted: [],
-      rating: 0,
-      totalSwaps: 0,
-      availability: [],
-      isOnline: true,
-      joinedDate: new Date().toISOString()
-    };
-    
-    setUsers([...users, newUser]);
-    setCurrentUser({
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      avatar: newUser.avatar
-    });
-    setActiveTab('discover');
+  const handleSignup = async (name: string, email: string, password: string) => {
+    try {
+      await signUp(email, password, name);
+      setActiveTab('discover');
+      setShowAuth(false);
+      alert('Account created successfully! Please check your email to verify your account.');
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert('Signup failed. Please try again.');
+    }
   };
 
-  const handleLogout = () => {
-    setCurrentUser(null);
-    setActiveTab('discover');
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      setActiveTab('discover');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const handleRequestSwap = (targetUser: User) => {
@@ -119,47 +117,59 @@ function App() {
     setShowSwapRequest(true);
   };
 
-  const handleSubmitSwapRequest = (data: {
+  const handleSubmitSwapRequest = async (data: {
     skillOffered: string;
     skillWanted: string;
     message: string;
   }) => {
     if (!currentUser || !selectedUser) return;
 
-    const newRequest: SwapRequest = {
-      id: Date.now().toString(),
-      fromUserId: currentUser.id,
+    const success = await createSwapRequest({
       toUserId: selectedUser.id,
       skillOffered: data.skillOffered,
       skillWanted: data.skillWanted,
-      message: data.message,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+      message: data.message
+    });
 
-    setSwapRequests([...swapRequests, newRequest]);
-    setSelectedUser(null);
+    if (success) {
+      setSelectedUser(null);
+      setShowSwapRequest(false);
+    } else {
+      alert('Failed to send swap request. Please try again.');
+    }
   };
 
-  const handleSwapAction = (requestId: string, action: 'accept' | 'reject' | 'delete') => {
-    setSwapRequests(prev => 
-      prev.map(req => 
-        req.id === requestId 
-          ? { ...req, status: action === 'delete' ? 'cancelled' : action === 'accept' ? 'accepted' : 'rejected', updatedAt: new Date().toISOString() }
-          : req
-      ).filter(req => !(action === 'delete' && req.id === requestId))
-    );
+  const handleSwapAction = async (requestId: string, action: 'accept' | 'reject' | 'delete') => {
+    if (action === 'delete') {
+      await deleteSwapRequest(requestId);
+    } else {
+      await updateSwapRequest(requestId, action === 'accept' ? 'accepted' : 'rejected');
+    }
   };
 
-  const handleBanUser = (userId: string) => {
-    setUsers(prev => prev.filter(user => user.id !== userId));
-    setSwapRequests(prev => prev.filter(req => req.fromUserId !== userId && req.toUserId !== userId));
+  const handleBanUser = async (userId: string) => {
+    const success = await deleteUser(userId);
+    if (success) {
+      alert('User has been banned successfully.');
+    } else {
+      alert('Failed to ban user. Please try again.');
+    }
   };
 
   const handleSendNotification = (message: string) => {
     // In a real app, this would send notifications to all users
     alert(`Notification sent to all users: ${message}`);
+  };
+
+  const handleUpdateProfile = async (updatedData: Partial<User>) => {
+    if (!currentUser) return;
+    
+    const success = await updateUserProfile(currentUser.id, updatedData);
+    if (success) {
+      setActiveTab('discover');
+    } else {
+      alert('Failed to update profile. Please try again.');
+    }
   };
 
   return (
@@ -198,6 +208,13 @@ function App() {
               <p className="text-slate-400">Find talented individuals to exchange knowledge with</p>
             </div>
 
+            {usersLoading ? (
+              <div className="text-center py-20">
+                <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-slate-400">Loading users...</p>
+              </div>
+            ) : (
+              <>
             <SearchBar filters={searchFilters} onFiltersChange={setSearchFilters} />
 
             <div className="flex items-center justify-between">
@@ -239,6 +256,8 @@ function App() {
                 </button>
               </div>
             )}
+              </>
+            )}
           </div>
         ) : activeTab === 'requests' ? (
           // Swap Requests Tab
@@ -248,8 +267,14 @@ function App() {
               <p className="text-slate-400">Manage your skill exchange requests</p>
             </div>
 
+            {requestsLoading ? (
+              <div className="text-center py-20">
+                <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-slate-400">Loading requests...</p>
+              </div>
+            ) : (
             <div className="space-y-6">
-              {userSwapRequests.length === 0 ? (
+              {swapRequests.length === 0 ? (
                 <div className="text-center py-20">
                   <p className="text-xl text-slate-400 mb-4">No swap requests yet.</p>
                   <button
@@ -260,9 +285,11 @@ function App() {
                   </button>
                 </div>
               ) : (
-                userSwapRequests.map((request) => {
+                swapRequests.map((request) => {
                   const fromUser = users.find(u => u.id === request.fromUserId)!;
                   const toUser = users.find(u => u.id === request.toUserId)!;
+                  
+                  if (!fromUser || !toUser) return null;
                   
                   return (
                     <SwapRequestCard
@@ -279,6 +306,7 @@ function App() {
                 })
               )}
             </div>
+            )}
           </div>
         ) : activeTab === 'admin' && currentUser?.isAdmin ? (
           // Admin Dashboard

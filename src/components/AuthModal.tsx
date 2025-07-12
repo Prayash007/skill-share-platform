@@ -26,16 +26,6 @@ export function AuthModal({ isOpen, onClose, onLogin, onSignup }: AuthModalProps
       onLogin(formData.email, formData.password);
     }
     setFormData({ name: '', email: '', password: '' });
-    onClose();
-  };
-
-  const quickLogin = (userType: 'user' | 'admin') => {
-    if (userType === 'admin') {
-      onLogin('admin@skillswap.com', 'admin123');
-    } else {
-      onLogin('alex@example.com', 'password123');
-    }
-    onClose();
   };
 
   return (
@@ -57,32 +47,6 @@ export function AuthModal({ isOpen, onClose, onLogin, onSignup }: AuthModalProps
         </div>
 
         <div className="p-6">
-          {/* Quick Login Buttons */}
-          <div className="mb-6 space-y-2">
-            <p className="text-sm text-slate-400 text-center mb-3">Quick Demo Access:</p>
-            <button
-              onClick={() => quickLogin('user')}
-              className="w-full px-4 py-2 bg-cyan-600/20 text-cyan-400 border border-cyan-400/50 rounded-xl hover:bg-cyan-600/30 transition-all duration-300 text-sm"
-            >
-              Login as Demo User (Alex Chen)
-            </button>
-            <button
-              onClick={() => quickLogin('admin')}
-              className="w-full px-4 py-2 bg-purple-600/20 text-purple-400 border border-purple-400/50 rounded-xl hover:bg-purple-600/30 transition-all duration-300 text-sm"
-            >
-              Login as Admin
-            </button>
-          </div>
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-700"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-slate-800 text-slate-400">or continue with email</span>
-            </div>
-          </div>
-
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignup && (

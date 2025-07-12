@@ -1,0 +1,102 @@
+import { useState, useEffect } from 'react';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
+import { AuthUser } from '../types';
+
+export function useAuth() {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        fetchUserProfile(session.user);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          await fetchUserProfile(session.user);
+        } else {
+          setUser(null);
+          setLoading(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', supabaseUser.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        setLoading(false);
+        return;
+      }
+
+      if (profile) {
+        setUser({
+          id: profile.id,
+          name: profile.name,
+          email: supabaseUser.email || '',
+          avatar: profile.avatar_url || `https://images.pexels.com/photos/1586996/pexels-photo-1586996.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop`,
+          isAdmin: profile.is_admin
+        });
+      }
+    } catch (error) {
+      console.error('Error in fetchUserProfile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signUp = async (email: string, password: string, name: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name,
+        }
+      }
+    });
+
+    if (error) throw error;
+    return data;
+  };
+
+  const signIn = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+    return data;
+  };
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  };
+
+  return {
+    user,
+    loading,
+    signUp,
+    signIn,
+    signOut
+  };
+}
