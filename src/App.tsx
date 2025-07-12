@@ -92,10 +92,11 @@ function App() {
       await signUp(email, password, name);
       setActiveTab('discover');
       setShowAuth(false);
-      alert('Account created successfully! Please check your email to verify your account.');
+      alert('Account created successfully! You can now start using SkillSwap.');
     } catch (error) {
       console.error('Signup error:', error);
-      alert('Signup failed. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Signup failed. Please try again.';
+      alert(`Signup failed: ${errorMessage}`);
     }
   };
 

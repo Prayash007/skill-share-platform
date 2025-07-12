@@ -20,6 +20,28 @@ export function AuthModal({ isOpen, onClose, onLogin, onSignup }: AuthModalProps
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (isSignup && !formData.name.trim()) {
+      alert('Please enter your full name');
+      return;
+    }
+    
+    if (!formData.email.trim()) {
+      alert('Please enter your email address');
+      return;
+    }
+    
+    if (!formData.password.trim()) {
+      alert('Please enter your password');
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      alert('Password must be at least 6 characters long');
+      return;
+    }
+    
     if (isSignup) {
       onSignup(formData.name, formData.email, formData.password);
     } else {

@@ -93,28 +93,46 @@ export function useAuth() {
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name,
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+          }
         }
-      }
-    });
+      });
 
-    if (error) throw error;
-    return data;
+      if (error) {
+        console.error('Supabase signup error:', error);
+        throw new Error(error.message || 'Failed to create account');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error;
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    if (error) throw error;
-    return data;
+      if (error) {
+        console.error('Supabase signin error:', error);
+        throw new Error(error.message || 'Failed to sign in');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Signin error:', error);
+      throw error;
+    }
   };
 
   const signOut = async () => {
