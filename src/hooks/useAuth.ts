@@ -119,7 +119,6 @@ export function useAuth() {
             name
           },
           emailRedirectTo: undefined // Disable email confirmation
-          }
         }
       });
 
