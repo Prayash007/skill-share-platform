@@ -3,6 +3,7 @@ import { Save, X, Plus, MapPin, Calendar, Globe, Camera, Home } from 'lucide-rea
 import { User } from '../types';
 import { SkillTag } from './SkillTag';
 import { RatingStars } from './RatingStars';
+import { useAuth } from '../hooks/useAuth';
 
 interface UserProfileProps {
   user: User;
@@ -11,6 +12,9 @@ interface UserProfileProps {
 }
 
 export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
+  const { user: authUser } = useAuth();
+  const isOwnProfile = authUser && authUser.id === user.id;
+
   const [formData, setFormData] = useState({
     name: user.name,
     location: user.location || '',
@@ -127,6 +131,7 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  readOnly={!isOwnProfile}
                   className="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-slate-600 text-white text-lg focus:outline-none focus:border-cyan-400 transition-all duration-300"
                   placeholder="Enter your name"
                 />
@@ -139,6 +144,7 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  readOnly={!isOwnProfile}
                   className="w-full px-0 py-3 bg-transparent border-0 border-b-2 border-slate-600 text-white text-lg focus:outline-none focus:border-cyan-400 transition-all duration-300"
                   placeholder="City, Country"
                 />
@@ -155,16 +161,19 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                         <div key={index} className="relative group">
                           <span className="inline-block px-4 py-2 bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 rounded-full text-sm font-medium">
                             {skill}
+                            {isOwnProfile && (
                             <button
                               onClick={() => handleRemoveSkill('offered', index)}
                               className="ml-2 text-cyan-300 hover:text-red-400 transition-colors duration-300"
                             >
                               ×
                             </button>
+                            )}
                           </span>
                         </div>
                       ))}
                     </div>
+                    {isOwnProfile && (
                     <div className="flex space-x-2">
                       <input
                         type="text"
@@ -181,6 +190,7 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
+                    )}
                   </div>
                 </div>
 
@@ -193,16 +203,19 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                         <div key={index} className="relative group">
                           <span className="inline-block px-4 py-2 bg-pink-500/20 text-pink-300 border border-pink-400/50 rounded-full text-sm font-medium">
                             {skill}
+                            {isOwnProfile && (
                             <button
                               onClick={() => handleRemoveSkill('wanted', index)}
                               className="ml-2 text-pink-300 hover:text-red-400 transition-colors duration-300"
                             >
                               ×
                             </button>
+                            )}
                           </span>
                         </div>
                       ))}
                     </div>
+                    {isOwnProfile && (
                     <div className="flex space-x-2">
                       <input
                         type="text"
@@ -219,6 +232,7 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                         <Plus className="w-4 h-4" />
                       </button>
                     </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -231,15 +245,18 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                     {formData.availability.map((time, index) => (
                       <span key={index} className="inline-block px-4 py-2 bg-purple-500/20 text-purple-300 border border-purple-400/50 rounded-full text-sm font-medium">
                         {time}
+                        {isOwnProfile && (
                         <button
                           onClick={() => handleRemoveAvailability(index)}
                           className="ml-2 text-purple-300 hover:text-red-400 transition-colors duration-300"
                         >
                           ×
                         </button>
+                        )}
                       </span>
                     ))}
                   </div>
+                  {isOwnProfile && (
                   <div className="flex space-x-2">
                     <select
                       value={newAvailability}
@@ -260,10 +277,12 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
+                  )}
                 </div>
               </div>
 
               {/* Profile Visibility */}
+              {isOwnProfile && (
               <div>
                 <label className="block text-lg font-medium text-white mb-3">Profile</label>
                 <div className="flex items-center space-x-4 pb-3 border-b-2 border-slate-600">
@@ -289,8 +308,10 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                   </button>
                 </div>
               </div>
+              )}
 
               {/* Action Buttons */}
+              {isOwnProfile && (
               <div className="flex space-x-4 pt-6">
                 <button
                   onClick={handleSave}
@@ -305,6 +326,7 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                   Discard
                 </button>
               </div>
+              )}
             </div>
 
             {/* Right Column - Profile Photo */}
@@ -320,10 +342,13 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                         className="w-full h-full object-cover"
                       />
                     </div>
+                    {isOwnProfile && (
                     <button className="absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300">
                       <Camera className="w-6 h-6 text-white" />
                     </button>
+                    )}
                   </div>
+                  {isOwnProfile && (
                   <div className="mt-4 space-y-2">
                     <button className="block w-full px-4 py-2 bg-cyan-600/20 text-cyan-400 border border-cyan-400/50 rounded-lg hover:bg-cyan-600/30 transition-all duration-300 text-sm">
                       Add/Edit
@@ -332,6 +357,7 @@ export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
                       Remove
                     </button>
                   </div>
+                  )}
                 </div>
               </div>
             </div>
