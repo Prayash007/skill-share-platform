@@ -38,18 +38,6 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
 
-  // Show loading state
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white text-lg">Loading SkillSwap...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Filter users based on search criteria
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
@@ -75,6 +63,18 @@ function App() {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
+
+  // Show loading state after all hooks are called
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading SkillSwap...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleLogin = async (email: string, password: string) => {
     try {
