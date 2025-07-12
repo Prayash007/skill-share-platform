@@ -79,11 +79,11 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3 text-slate-400 text-sm">
                 <Phone className="w-4 h-4 text-cyan-400" />
-                <span>+1 (555) 123-4567</span>
+                <span>+91 123-4567</span>
               </div>
               <div className="flex items-center space-x-3 text-slate-400 text-sm">
                 <MapPin className="w-4 h-4 text-cyan-400" />
-                <span>San Francisco, CA</span>
+                <span>Raipur, CG</span>
               </div>
             </div>
             
@@ -107,7 +107,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-slate-700/50 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           <div className="flex items-center space-x-4 text-slate-400 text-sm">
-            <span>© 2024 SkillSwap. All rights reserved.</span>
+            <span>© 2025 SkillSwap. All rights reserved.</span>
             <span>•</span>
             <a href="#" className="hover:text-cyan-400 transition-colors duration-300">Privacy Policy</a>
             <span>•</span>
