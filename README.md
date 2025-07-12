@@ -1,140 +1,101 @@
-# Futuristic Skill Swap Platform
+# SkillSwap Platform
 
-> A holographic, neon-lit digital hub for exchanging skills—intuitive, immersive, and production‑ready.
-
----
-
-## 📋 Problem Statement & Progress
-
-**Problem Statement:** Develop a Skill Swap Platform — a mini application enabling users to list their skills and request others in return. Features include basic info (name, optional location/photo), lists of skills offered/wanted, availability settings (weekends, evenings), public/private profiles, search/browse by skill (e.g., Photoshop, Excel), request/accept/reject swap offers, view current and pending swap requests, delete unaccepted requests, ratings/feedback post-swap, and an Admin role for moderating spam/inappropriate descriptions, banning users, monitoring swap statuses, sending platform-wide messages, and downloading activity/feedback/swap reports.
-
-**Progress:** We have finalized the UI/UX wireframes for Discovery, Profile Detail, Swap Request Modal, Swap Management, Unified Dashboard, Chatbot, and Admin Console. The project structure is set up in React/TypeScript with Tailwind CSS and Framer Motion; we’ve implemented modular components, validation patterns, and coding standards. The frontend is deployed to Vercel for fast previews; backend endpoints will integrate as soon as development completes.
+A modern, peer-to-peer skill exchange platform built with React, Vite, TypeScript, Tailwind CSS, and Supabase.
 
 ---
 
-## 🚀 Project Overview
+## Features
 
-**Futuristic Skill Swap Platform** is a next‑generation application designed to make skill exchanges fast, engaging, and secure. Built with a mobile‑first mindset, it features glassmorphic UI, real‑time interactions, and a robust swap management system.
-
-### Key Highlights
-
-* **Holographic UI**: Deep‑space backgrounds, neon accents, glassmorphic panels with smooth animations.
-* **Seamless Swap Flow**: From discovery to request to feedback, every step is animated and intuitive.
-* **Central Command Hub**: Unified Dashboard for overview, activity feed, swap management, chat, and admin controls.
-* **Interactive Chatbot**: “Ask Me” assistant with realistic typing, quick‑question chips, and history.
-* **Admin Console**: Flagged content review, user ban, broadcast messaging, real‑time monitoring, and exportable reports.
-
----
-
-## 📸 Screenshots & Wireframes
-
-1. **Discover Page**: Paginated user gallery with filter chips and glowing skill tags.
-2. **Profile Detail**: Large avatar, offered vs. wanted skills, rating & feedback section.
-3. **Swap Request Modal**: Step‑by‑step dropdown selectors for your skill vs. theirs and a custom message.
-4. **Swap Requests Management**: Filterable list (Pending/Accepted/Rejected) with inline actions.
-5. **Unified Dashboard**: Overview cards, recent activity, snapshots, feedback summary, and admin widgets.
-6. **Interactive Chatbot**: Floating bubble with full chat overlay.
-7. **Admin Command Center**: Flagged content, ban modal, broadcast composer, real‑time stats.
+- *User Authentication:* Sign up, log in, and manage sessions securely (Supabase Auth).
+- *User Profiles:* Create and edit profiles, add skills offered/wanted, set availability, and upload avatars.
+- *Skill Discovery:* Search, filter, and browse users by skills, rating, and availability.
+- *Skill Swap Requests:* Send, accept, reject, and manage skill exchange requests.
+- *Admin Dashboard:* Platform moderation, user management, ban users, send notifications, and download platform reports.
+- *Chatbot Assistant:* In-app AI assistant to help users navigate and answer questions.
+- *Responsive UI:* Beautiful, animated, and mobile-friendly interface with Tailwind CSS.
+- *Pagination:* Efficiently browse large user lists.
+- *Rating System:* Users can rate each other after swaps.
+- *Notifications:* Admins can send notifications to all users.
+- *Demo Data:* Mock data for users, swap requests, and feedback for testing and development.
 
 ---
 
-## 🛠️ Tech Stack
+## Setup Instructions
 
-| Layer            | Technology                                                                                              |
-| ---------------- | ------------------------------------------------------------------------------------------------------- |
-| Frontend         | React, TypeScript, TailwindCSS, Framer Motion                                                           |
-| Backend          | Supabase (Authentication, Database, Storage, Realtime)                                                  |
-| State & Caching  | Redux Toolkit, React Query, Cookies                                                                     |
-| Linting & Format | ESLint, Prettier                                                                                        |
-| Deployment       | Vercel ([https://skill-share-platform-zfb9.vercel.app/](https://skill-share-platform-zfb9.vercel.app/)) |
+### 1. Clone the Repository
+bash
+git clone <your-repo-url>
+cd skill-share-platform-main
+
+
+### 2. Install Dependencies
+bash
+npm install
+
+
+### 3. Configure Environment Variables
+Create a .env file in the root directory with the following variables:
+
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+
+You can find these in your Supabase project settings.
+
+### 4. Run the Development Server
+bash
+npm run dev
+
+The app will be available at [http://localhost:5173](http://localhost:5173) by default.
+
+### 5. Build for Production
+bash
+npm run build
+
+
+### 6. Preview Production Build
+bash
+npm run preview
 
 
 ---
 
-## 📦 Installation & Setup
+## Project Structure
 
-1. **Clone the repo**
-
-   ````bash
-   git clone https://github.com/Prayash007/skill-share-platform
-   cd skill-share-platform
-   ```bash
-   git clone https://github.com/Prayash007/skill-share-platform
-   cd skill-swap-platform
-   ````
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-3. **Run locally**
-
-   ```bash
-   # Frontend
-   cd src && npm run dev
-
-   # Backend (Supabase)
-   ```
-4. **Build for production**
-
-   ```bash
-   cd src && npm run build
-   ```
+- src/components/ — All React UI components (Header, Footer, AuthModal, Chatbot, AdminDashboard, etc.)
+- src/hooks/ — Custom React hooks for authentication, users, and swap requests.
+- src/lib/ — Supabase client setup.
+- src/types/ — TypeScript type definitions.
+- src/utils/ — Mock data and utility functions.
+- supabase/migrations/ — SQL migrations for database setup.
 
 ---
 
-## 🎨 UI/UX & Screens
+## Database
 
-* **Discover Page**: Filter by skill, rating, availability; smooth pagination chips.
-* **Profile Detail**: Public profiles only; request button triggers login popup when unauthenticated.
-* **Swap Modal**: Dropdowns for offered/wanted skills, message textarea, animated submit.
-* **Swap Management**: Status filter dropdown, request list with Accept/Reject/Delete actions, pagination.
-* **Dashboard**: Widgets for overview, activity feed, snapshots, feedback, chatbot, and admin controls.
-* **Chatbot**: Floating bubble, typing indicator, quick‑question suggestions.
-* **Admin Console**: Flag count, ban user modal, broadcast banner, CSV/PDF exports.
+This project uses Supabase for authentication and as a backend database.  
+You must set up the following tables in your Supabase project:
 
----
+- profiles — User profiles, skills, ratings, etc.
+- swap_requests — Skill swap requests between users.
 
-## ✅ Coding Standards (40%)
-
-* **Data Validation**: Enforce on both frontend & backend (forms, API inputs).
-* **Dynamic Values**: No hard‑coded strings or numbers—use environment configs and constants.
-* **Reusability**: Modular, DRY components/functions; shared UI library.
-* **Performance**: Fast initial load, minimal network calls, caching (React Query, cookies).
-* **Error Handling**: Graceful fallbacks, clear user messages for invalid inputs or system errors.
-* **Linting**: ESLint & Prettier with strict rules; pre‑commit hooks ensure consistency.
-* **Complexity**: Keep logic shallow; leverage hooks & utility functions for algorithms.
+You can use the SQL files in supabase/migrations/ to set up your database schema.
 
 ---
 
-## 🎯 UI/UX Design Criteria (15%)
+## Contribution
 
-* **Responsive & Mobile-First**: Sidebar collapses to bottom nav; single‑column on small screens.
-* **Pagination & Breadcrumbs**: Clear navigation for lists and nested pages.
-* **Search & Filters**: Visible state, instant feedback, accessible labels.
-* **Color Contrast**: font-to-background contrast checks.
-* **Touch Targets**: Minimum 44×44 px interactive areas.
-
----
-
-## 🤝 Contributors
-
-Prayash Sinha (B.Tech Electronics and Communication Engineering @ NIT Raipur) 
-Abhay Kumar (B.Tech Computer Science Engineering @ NIT Raipur) 
-Leora Saharia (B.Tech Biomedical engineering @ NIT Raipur)
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Commit your changes.
+4. Open a pull request.
 
 ---
 
+## Authors
+1. Prayash Sinha
+2. Leora Saharia
+3. Abhay Kumar
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgements
-
-* Designers & Developers contributing wireframes and feedback
-* All open‑source tools and libraries that made this possible
-
----
+MIT
