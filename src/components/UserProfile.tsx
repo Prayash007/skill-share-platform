@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Save, X, Plus, MapPin, Calendar, Globe, Camera, Home } from 'lucide-react';
 import { User } from '../types';
 import { SkillTag } from './SkillTag';
 import { RatingStars } from './RatingStars';
-import { useAuth } from '../hooks/useAuth';
 
 interface UserProfileProps {
   user: User;
+  currentUser: User | null;
   onSave: (updatedUser: Partial<User>) => void;
   onCancel: () => void;
 }
 
-export function UserProfile({ user, onSave, onCancel }: UserProfileProps) {
-  const { user: authUser } = useAuth();
-  const isOwnProfile = authUser && authUser.id === user.id;
+export function UserProfile({ user, currentUser, onSave, onCancel }: UserProfileProps) {
+  const isOwnProfile = useMemo(() => currentUser && currentUser.id === user.id, [currentUser, user.id]);
 
   const [formData, setFormData] = useState({
     name: user.name,

@@ -207,6 +207,7 @@ function App() {
           // User Profile
           <UserProfile
             user={currentUserProfile!}
+            currentUser={currentUser}
             onSave={handleUpdateProfile}
             onCancel={() => setActiveTab('discover')}
           />
@@ -214,12 +215,14 @@ function App() {
           // Edit Profile
           <UserProfile
             user={currentUserProfile!}
+            currentUser={currentUser}
             onSave={handleUpdateProfile}
             onCancel={() => setActiveTab('discover')}
           />
         ) : activeTab === 'viewProfile' && viewedProfile ? (
           <UserProfile
             user={viewedProfile}
+            currentUser={currentUser}
             onSave={handleUpdateProfile} // Or a different handler if you don't want to allow editing from this view
             onCancel={() => setActiveTab('discover')}
           />
