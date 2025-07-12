@@ -27,6 +27,7 @@ function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [showSwapRequest, setShowSwapRequest] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [viewedProfile, setViewedProfile] = useState<User | null>(null);
   
   // Search and pagination
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
@@ -174,6 +175,11 @@ function App() {
     }
   };
 
+  const handleViewProfile = (user: User) => {
+    setViewedProfile(user);
+    setActiveTab('viewProfile');
+  };
+
   // Get current user's full profile data
   const currentUserProfile = users.find(u => u.id === currentUser?.id);
   return (
@@ -211,6 +217,12 @@ function App() {
             onSave={handleUpdateProfile}
             onCancel={() => setActiveTab('discover')}
           />
+        ) : activeTab === 'viewProfile' && viewedProfile ? (
+          <UserProfile
+            user={viewedProfile}
+            onSave={handleUpdateProfile} // Or a different handler if you don't want to allow editing from this view
+            onCancel={() => setActiveTab('discover')}
+          />
         ) : activeTab === 'discover' ? (
           // Discover Tab
           <div className="space-y-8">
@@ -246,7 +258,7 @@ function App() {
                   user={user}
                   currentUserId={currentUser.id}
                   onRequestSwap={handleRequestSwap}
-                  onViewProfile={(user) => console.log('View profile:', user)}
+                  onViewProfile={handleViewProfile}
                 />
               ))}
             </div>
